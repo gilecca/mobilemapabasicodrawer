@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { LocationGeocodedAddress } from 'expo-location';
-import { DESTINATION } from '../constants/Coords'; // Importamos as coordenadas do destino
+import { DESTINATION } from '../constants/Coords'; 
 
 interface InfoScreenProps {
   address: LocationGeocodedAddress[] | null;
@@ -14,7 +14,6 @@ export default function InfoScreen({ address, distance }: InfoScreenProps) {
     if (!address || address.length === 0) return 'Buscando endereço do destino...';
     const addr = address[0];
     const streetInfo = addr.street || addr.name || addr.district || 'Logradouro não identificado';
-    // Adicionei o país também, já que pode ser internacional
     return `${streetInfo}, ${addr.city || ''} - ${addr.isoCountryCode || ''}`;
   };
 

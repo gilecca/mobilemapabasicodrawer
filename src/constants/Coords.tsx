@@ -1,6 +1,6 @@
 export const DESTINATION = {
-  latitude: -22.951743,
-  longitude: -43.21088,
-  title: "Destino da Prova",
-  description: "Cristo Redentor"
+  latitude: 35.36,
+  longitude: 138.73,
+  title: "Monte Fuji",
+  description: "富士山"
 };
