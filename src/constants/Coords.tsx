@@ -1,6 +1,6 @@
 export const DESTINATION = {
-  latitude: 48.8584,
-  longitude: 2.2945,
+  latitude: -22.951743,
+  longitude: -43.21088,
   title: "Destino da Prova",
-  description: "Torre Eiffel"
+  description: "Cristo Redentor"
 };

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, Dimensions, TouchableOpacity } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import MapView, { Marker, Polyline, Circle } from 'react-native-maps'; // <--- 1. Importar Circle
 import { Ionicons } from '@expo/vector-icons';
 import { DESTINATION } from '../constants/Coords';
 import { LocationObject } from 'expo-location';
@@ -17,9 +17,9 @@ export default function MapScreen({ location }: MapScreenProps) {
       mapRef.current.animateToRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.05, 
+        latitudeDelta: 0.05,
         longitudeDelta: 0.05,
-      }, 1000); 
+      }, 1000);
     }
   };
 
@@ -40,7 +40,7 @@ export default function MapScreen({ location }: MapScreenProps) {
   return (
     <View style={styles.container}>
       <MapView
-        ref={mapRef} 
+        ref={mapRef}
         style={styles.map}
         initialRegion={{
           latitude: userCoords.latitude,
@@ -49,20 +49,33 @@ export default function MapScreen({ location }: MapScreenProps) {
           longitudeDelta: 0.05,
         }}
       >
-        <Marker coordinate={userCoords} title="Você está aqui">
+        
+        <Circle 
+          center={userCoords}
+          radius = {200}
+          //radius={location.coords.accuracy || 0} 
+          fillColor="rgba(0, 122, 255, 0.2)" 
+          strokeColor="rgba(0, 122, 255, 0.4)" 
+          zIndex={1} 
+        />
+
+        
+        <Marker coordinate={userCoords} title="Você está aqui" zIndex={2}>
           <View style={styles.userMarker}>
             <Ionicons name="person" size={20} color="#007AFF" />
           </View>
         </Marker>
 
+        
         <Marker 
           coordinate={DESTINATION} 
           title={DESTINATION.title} 
           description={DESTINATION.description}
         >
-          <Ionicons name="flag" size={35} color="#FF3B30" />
+          <Ionicons name="square" size={15} color="#FF3B30" />
         </Marker>
 
+      
         <Polyline
           coordinates={[userCoords, DESTINATION]}
           strokeColor="#000"
@@ -71,13 +84,11 @@ export default function MapScreen({ location }: MapScreenProps) {
         />
       </MapView>
 
-     
       <TouchableOpacity 
         style={styles.fab} 
         onPress={handleRecenter}
         activeOpacity={0.7}
       >
-        
         <Ionicons name="locate" size={30} color="#007AFF" />
       </TouchableOpacity>
     </View>
@@ -85,24 +96,10 @@ export default function MapScreen({ location }: MapScreenProps) {
 }
 
 const styles = StyleSheet.create({
-  container: 
-  { 
-    flex: 1, 
-    backgroundColor: '#fff' 
-},
-  centerContainer: 
-  { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center' 
-},
-  map: 
-  { 
-    width: Dimensions.get('window').width, 
-    height: '100%' 
-},
-  userMarker: 
-  {
+  container: { flex: 1, backgroundColor: '#fff' },
+  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  map: { width: Dimensions.get('window').width, height: '100%' },
+  userMarker: {
     backgroundColor: 'white',
     padding: 5,
     borderRadius: 20,
@@ -115,12 +112,12 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: 'absolute',
-    bottom: 20, 
-    right: 20,  
+    bottom: 20,
+    right: 20,
     backgroundColor: 'white',
     width: 60,
     height: 60,
-    borderRadius: 30, 
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,

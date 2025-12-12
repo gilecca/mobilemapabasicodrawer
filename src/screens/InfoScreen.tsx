@@ -1,84 +1,59 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator } from 'react-native';
-import { LocationObject, LocationGeocodedAddress } from 'expo-location';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { LocationGeocodedAddress } from 'expo-location';
+import { DESTINATION } from '../constants/Coords'; // Importamos as coordenadas do destino
 
 interface InfoScreenProps {
-  location: LocationObject | null;
   address: LocationGeocodedAddress[] | null;
   distance: number;
 }
 
-export default function InfoScreen({ location, address, distance }: InfoScreenProps) {
+export default function InfoScreen({ address, distance }: InfoScreenProps) {
   
- 
   const getFormattedAddress = () => {
-    if (!address || address.length === 0) return 'Carregando endereço...';
-    
+    if (!address || address.length === 0) return 'Buscando endereço do destino...';
     const addr = address[0];
-    
-    
     const streetInfo = addr.street || addr.name || addr.district || 'Logradouro não identificado';
-    
-    
-    return `${streetInfo} - ${addr.city || ''}/${addr.region || ''}`; // Ex: Rua X - Varginha/MG
+    // Adicionei o país também, já que pode ser internacional
+    return `${streetInfo}, ${addr.city || ''} - ${addr.isoCountryCode || ''}`;
   };
-
-  if (!location) {
-    return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Aguardando GPS...</Text>
-      </View>
-    );
-  }
 
   return (
     <ScrollView contentContainerStyle={styles.infoContainer}>
-      <Text style={styles.headerTitle}>Painel de Dados</Text>
+      <Text style={styles.headerTitle}>Informações do Destino</Text>
 
+      {/* Título do Destino (Fixo) */}
       <View style={styles.card}>
-        <Text style={styles.label}>Coordenadas:</Text>
-        <Text style={styles.value}>Lat: {location.coords.latitude}</Text>
-        <Text style={styles.value}>Lon: {location.coords.longitude}</Text>
+        <Text style={styles.label}>Local:</Text>
+        <Text style={styles.valueHighlight}>{DESTINATION.title}</Text>
+        <Text style={{color: '#666', marginTop: 2}}>{DESTINATION.description}</Text>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.label}>Altitude:</Text>
-        <Text style={styles.value}>
-          {location.coords.altitude ? `${location.coords.altitude.toFixed(2)} m` : 'N/A'}
-        </Text>
+        <Text style={styles.label}>Coordenadas do Destino:</Text>
+        <Text style={styles.value}>Lat: {DESTINATION.latitude}</Text>
+        <Text style={styles.value}>Lon: {DESTINATION.longitude}</Text>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.label}>Precisão:</Text>
-        <Text style={styles.value}>+/- {location.coords.accuracy?.toFixed(1)} m</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>Endereço:</Text>
+        <Text style={styles.label}>Endereço Completo:</Text>
         <Text style={styles.value}>
           {getFormattedAddress()}
         </Text>
       </View>
 
       <View style={[styles.card, styles.highlightCard]}>
-        <Text style={styles.labelHighlight}>Distância:</Text>
+        <Text style={styles.labelHighlight}>Distância (De você até lá):</Text>
         <Text style={styles.valueHighlight}>
           {(distance / 1000).toFixed(2)} km
         </Text>
-        <Text style={styles.subText}>(Linha Reta / Haversine)</Text>
+        <Text style={styles.subText}>(Cálculo via Fórmula de Haversine)</Text>
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  centerContainer: 
-  { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center' 
-},
   infoContainer: 
   { 
     padding: 20 
@@ -124,7 +99,7 @@ const styles = StyleSheet.create({
 },
   valueHighlight: 
   { 
-    fontSize: 24, 
+    fontSize: 20, 
     fontWeight: 'bold', 
     color: '#0050b3' 
 },
@@ -132,5 +107,6 @@ const styles = StyleSheet.create({
   { 
     fontSize: 12, 
     color: '#666', 
-    fontStyle: 'italic' }
+    fontStyle: 'italic' 
+}
 });

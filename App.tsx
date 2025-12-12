@@ -1,8 +1,8 @@
-import 'react-native-gesture-handler'; 
+import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer'; 
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 
@@ -11,12 +11,14 @@ import InfoScreen from './src/screens/InfoScreen';
 import { DESTINATION } from './src/constants/Coords';
 import { getHaversineDistance } from './src/utils/MathUtils';
 
-
 const Drawer = createDrawerNavigator();
 
 export default function App() {
+  
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
-  const [address, setAddress] = useState<Location.LocationGeocodedAddress[] | null>(null);
+  
+  const [destAddress, setDestAddress] = useState<Location.LocationGeocodedAddress[] | null>(null);
+  
   const [distance, setDistance] = useState<number>(0);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -48,15 +50,15 @@ export default function App() {
           }
         );
 
-        let loc = await Location.getCurrentPositionAsync({});
+        
         let reverseGeocode = await Location.reverseGeocodeAsync({
-          latitude: loc.coords.latitude,
-          longitude: loc.coords.longitude
+          latitude: DESTINATION.latitude,
+          longitude: DESTINATION.longitude
         });
-        setAddress(reverseGeocode);
+        setDestAddress(reverseGeocode);
 
       } catch (error) {
-        setErrorMsg('Erro ao obter localização');
+        setErrorMsg('Erro ao obter dados');
         setLoading(false);
       }
     })();
@@ -88,42 +90,36 @@ export default function App() {
       <Drawer.Navigator
         initialRouteName="Mapa"
         screenOptions={{
-          drawerActiveTintColor: 'tomato', 
+          drawerActiveTintColor: 'tomato',
           drawerInactiveTintColor: 'gray',
-          headerStyle: {
-            backgroundColor: '#fff',
-            borderBottomWidth: 1,
-            borderBottomColor: '#eee'
-          },
-          headerTitleAlign: 'center', 
-          headerTintColor: '#333', 
+          headerStyle: { backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#eee' },
+          headerTitleAlign: 'center',
+          headerTintColor: '#333',
         }}
       >
-      
         <Drawer.Screen 
           name="Mapa"
           options={{
-            headerTitle: "Tela do Mapa", 
+            headerTitle: "Tela do Mapa",
             drawerIcon: ({ color, size }) => (
               <Ionicons name="map-outline" size={size} color={color} />
             ),
           }}
         >
-          
           {() => <MapScreen location={location} />}
         </Drawer.Screen>
         
-     
         <Drawer.Screen 
           name="Informações"
           options={{
-            headerTitle: "Painel de Dados",
+            headerTitle: "Dados do Destino", 
             drawerIcon: ({ color, size }) => (
               <Ionicons name="information-circle-outline" size={size} color={color} />
             ),
           }}
         >
-          {() => <InfoScreen location={location} address={address} distance={distance} />}
+      
+          {() => <InfoScreen address={destAddress} distance={distance} />}
         </Drawer.Screen>
       </Drawer.Navigator>
     </NavigationContainer>
